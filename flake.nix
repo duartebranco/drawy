@@ -46,9 +46,6 @@
             inherit (self.checks.${system}.pre-commit-check) shellHook enabledPackages;
           in
           pkgs.mkShell {
-            shellHook = shellHook + ''
-              which zsh >/dev/null && exec zsh
-            '';
             buildInputs =
               enabledPackages
               ++ (with pkgs; [
