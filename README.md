@@ -3,18 +3,29 @@
   <h1 align="center">Drawy</h1>
   <p align="center">Your handy, infinite, brainstorming tool!</center>
 </p>
+
+<p align="center">
+<a href="https://github.com/prayag2/drawy/stargazers"><img alt="GitHub Stars" src="https://img.shields.io/github/stars/prayag2/drawy?style=for-the-badge&logo=github&labelColor=%23202025&color=%23205CC0"></a>
+<a href="https://github.com/prayag2/drawy/network"><img alt="GitHub Forks" src="https://img.shields.io/github/forks/prayag2/drawy?style=for-the-badge&logo=github&labelColor=%23202025&color=%23205CC0"></a>
+<a href="https://github.com/prayag2/drawy/releases"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/prayag2/drawy?include_prereleases&style=for-the-badge&labelColor=%23202025&color=%23205CC0"></a>
+</p>
+
 <img src="./assets/screenshot.png" style="width: 100%"/>
 
 Drawy is a work-in-progress infinite whiteboard tool written in Qt/C++, which aims to be a native-desktop alternative to the amazing web-based Excalidraw.
 
+# Community
+Join our Discord server to engage with our community and help shape the future of Drawy!  
+  
+<a href="https://discord.gg/TUPwH24j"><img alt="Static Badge" src="https://img.shields.io/badge/Discord%20-%20Server?style=for-the-badge&logo=Discord&color=%23eee"></a>  
 
 # Installation  
 <a href="https://github.com/Prayag2/drawy/releases/download/1.0.0-alpha/Drawy-47b7552-x86_64.AppImage">
-<img alt="Static Badge" src="https://img.shields.io/badge/Download-Linux-F7B601?style=for-the-badge">
+<img alt="Static Badge" src="https://img.shields.io/badge/Download-Linux-F7B601?style=for-the-badge&labelColor=%23202025">
 </a>
 
 <a href="https://github.com/Prayag2/drawy/releases/download/1.0.0-alpha/drawy-windows-x86_64.zip">
-<img alt="Static Badge" src="https://img.shields.io/badge/Download-Windows-007CF7?style=for-the-badge">
+<img alt="Static Badge" src="https://img.shields.io/badge/Download-Windows-007CF7?style=for-the-badge&labelColor=%23202025">
 </a>
 
 ## Compiling from Source
