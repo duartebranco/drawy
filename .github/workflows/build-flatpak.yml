@@ -23,11 +23,6 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install dependencies
-      run: |
-        apt update
-        apt install -y ca-certificates
-
     - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
         bundle: Drawy.flatpak
