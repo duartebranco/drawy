@@ -55,12 +55,6 @@ if (APPLE)
     )
 endif()
 
-if (WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        WIN32_EXECUTABLE TRUE
-    )
-endif()
-
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION .
@@ -72,4 +66,8 @@ if (UNIX AND NOT APPLE)
   install(PROGRAMS deploy/linux/io.github.prayag2.Drawy.desktop.in DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/applications RENAME io.github.prayag2.Drawy.desktop)
   install(FILES assets/logo.svg DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/icons/hicolor/scalable/apps RENAME io.github.prayag2.Drawy.svg)
   install(FILES deploy/linux/io.github.prayag2.Drawy.metainfo.xml.in DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/metainfo/ RENAME io.github.prayag2.Drawy.metainfo.xml)
+endif()
+
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE mingw32)
 endif()
