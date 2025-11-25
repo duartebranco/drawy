@@ -35,8 +35,7 @@ file(GLOB_RECURSE SRC_FILES
 # Combine translation files with the source files.
 set(PROJECT_SOURCES ${TS_FILES} ${SRC_FILES})
 
-qt_add_executable(${PROJECT_NAME}
-    MANUAL_FINALIZATION
+qt_add_executable(${PROJECT_NAME} WIN32
     ${PROJECT_SOURCES}
 )
 
@@ -74,5 +73,3 @@ if (UNIX AND NOT APPLE)
   install(FILES assets/logo.svg DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/icons/hicolor/scalable/apps RENAME io.github.prayag2.Drawy.svg)
   install(FILES deploy/linux/io.github.prayag2.Drawy.metainfo.xml.in DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/metainfo/ RENAME io.github.prayag2.Drawy.metainfo.xml)
 endif()
-
-qt_finalize_target(${PROJECT_NAME})
