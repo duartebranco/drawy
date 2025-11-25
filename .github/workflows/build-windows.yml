@@ -9,6 +9,10 @@ jobs:
   build:
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: bash
+
     steps:
       - uses: actions/checkout@v3
 
@@ -32,7 +36,7 @@ jobs:
           windeployqt build/drawy.exe --dir deploy/windows
 
       - name: Copy Executable
-        run: copy build\\drawy.exe deploy\\windows
+        run: cp build/drawy.exe deploy/windows
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
