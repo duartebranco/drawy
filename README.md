@@ -1,3 +1,9 @@
+> [!NOTE]
+> Join our Discord server via the button below for the newest updates, announcements, and community discussions.
+>   
+> <a href="https://discord.gg/TUPwH24j"><img alt="Static Badge" src="https://img.shields.io/badge/Discord%20-%20Server?style=for-the-badge&logo=Discord&color=%23eee"></a>  
+
+  
 <p align="center">
   <img src="assets/logo-256.png" width=100/>
   <h1 align="center">Drawy</h1>
@@ -12,12 +18,7 @@
 
 <img src="./assets/screenshot.png" style="width: 100%"/>
 
-Drawy is a work-in-progress infinite whiteboard tool written in Qt/C++, which aims to be a native-desktop alternative to the amazing web-based Excalidraw.
-
-# Community
-Join our Discord server to engage with our community and help shape the future of Drawy!  
-  
-<a href="https://discord.gg/TUPwH24j"><img alt="Static Badge" src="https://img.shields.io/badge/Discord%20-%20Server?style=for-the-badge&logo=Discord&color=%23eee"></a>  
+Drawy is a work-in-progress infinite whiteboard tool written in Qt/C++, which aims to be a native-desktop alternative to the amazing web-based Excalidraw.  
 
 # Installation  
 <a href="https://github.com/Prayag2/drawy/releases/download/1.0.0-alpha/Drawy-47b7552-x86_64.AppImage">
