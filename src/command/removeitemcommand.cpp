@@ -32,9 +32,6 @@
 RemoveItemCommand::RemoveItemCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{std::move(items)} {
 }
 
-RemoveItemCommand::~RemoveItemCommand() {
-}
-
 void RemoveItemCommand::execute(ApplicationContext *context) {
     auto &transformer{context->spatialContext().coordinateTransformer()};
     auto &quadtree{context->spatialContext().quadtree()};

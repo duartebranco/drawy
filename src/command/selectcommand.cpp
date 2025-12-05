@@ -29,9 +29,6 @@
 
 SelectCommand::SelectCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{std::move(items)} {}
 
-SelectCommand::~SelectCommand() {
-}
-
 void SelectCommand::execute(ApplicationContext *context) {
     auto &selectedItems{context->selectionContext().selectedItems()};
 

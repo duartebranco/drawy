@@ -35,9 +35,6 @@ UngroupCommand::UngroupCommand(const QVector<std::shared_ptr<Item>>& items) : It
     }
 }
 
-UngroupCommand::~UngroupCommand() {
-}
-
 void UngroupCommand::execute(ApplicationContext *context) {
     auto &quadtree{context->spatialContext().quadtree()};
     auto &selectedItems{context->selectionContext().selectedItems()};

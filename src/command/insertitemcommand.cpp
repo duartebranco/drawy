@@ -30,9 +30,6 @@
 InsertItemCommand::InsertItemCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{std::move(items)} {
 }
 
-InsertItemCommand::~InsertItemCommand() {
-}
-
 void InsertItemCommand::execute(ApplicationContext *context) {
     auto &transformer{context->spatialContext().coordinateTransformer()};
     auto &quadtree{context->spatialContext().quadtree()};

@@ -29,9 +29,6 @@
 
 DeselectCommand::DeselectCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{std::move(items)} {}
 
-DeselectCommand::~DeselectCommand() {
-}
-
 void DeselectCommand::execute(ApplicationContext *context) {
     auto &selectedItems{context->selectionContext().selectedItems()};
 

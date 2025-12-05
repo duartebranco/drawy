@@ -38,9 +38,6 @@ GroupCommand::GroupCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{s
     ApplicationContext::instance()->spatialContext().quadtree().reorder(m_items);
 }
 
-GroupCommand::~GroupCommand() {
-}
-
 void GroupCommand::execute(ApplicationContext *context) {
     auto &quadtree{context->spatialContext().quadtree()};
     auto &selectedItems{context->selectionContext().selectedItems()};
