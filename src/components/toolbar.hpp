@@ -29,7 +29,7 @@ class ToolBar : public QFrame {
     Q_OBJECT
 public:
     explicit ToolBar(QWidget *parent = nullptr);
-    ~ToolBar();
+    ~ToolBar() override;
 
     Tool &curTool() const;
     void addTool(const std::shared_ptr<Tool>& tool, Tool::Type type);

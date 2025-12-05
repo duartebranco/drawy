@@ -40,7 +40,7 @@ public:
     void setModifiers(Qt::KeyboardModifiers modifiers);
 
 private:
-    Qt::MouseButton m_button;
+    Qt::MouseButton m_button{Qt::NoButton};
     QPoint m_pos;
     qreal m_pressure{1.0};
     QString m_text;

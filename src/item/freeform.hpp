@@ -26,7 +26,7 @@
 class FreeformItem : public Item, public std::enable_shared_from_this<FreeformItem> {
 public:
     FreeformItem();
-    ~FreeformItem() = default;
+    ~FreeformItem() override = default;
     FreeformItem(const FreeformItem &freeform);
 
     static int minPointDistance();
