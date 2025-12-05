@@ -18,6 +18,8 @@
 
 #include "insertitemcommand.hpp"
 
+#include <utility>
+
 #include "../context/applicationcontext.hpp"
 #include "../context/coordinatetransformer.hpp"
 #include "../context/selectioncontext.hpp"
@@ -25,7 +27,7 @@
 #include "../data-structures/cachegrid.hpp"
 #include "../data-structures/quadtree.hpp"
 
-InsertItemCommand::InsertItemCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{items} {
+InsertItemCommand::InsertItemCommand(QVector<std::shared_ptr<Item>> items) : ItemCommand{std::move(items)} {
 }
 
 InsertItemCommand::~InsertItemCommand() {

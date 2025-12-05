@@ -25,7 +25,7 @@ class GroupItem;
 
 class UngroupCommand : public ItemCommand {
 public:
-    UngroupCommand(QVector<std::shared_ptr<Item>> items);
+    UngroupCommand(const QVector<std::shared_ptr<Item>>& items);
     ~UngroupCommand();
 
     void execute(ApplicationContext *context) override;

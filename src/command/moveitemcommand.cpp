@@ -18,6 +18,8 @@
 
 #include "moveitemcommand.hpp"
 
+#include <utility>
+
 #include "../context/applicationcontext.hpp"
 #include "../context/coordinatetransformer.hpp"
 #include "../context/spatialcontext.hpp"
@@ -25,7 +27,7 @@
 #include "../item/item.hpp"
 
 MoveItemCommand::MoveItemCommand(QVector<std::shared_ptr<Item>> items, QPointF delta)
-    : ItemCommand{items},
+    : ItemCommand{std::move(items)},
       m_delta{delta} {
 }
 

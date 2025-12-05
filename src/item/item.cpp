@@ -18,6 +18,8 @@
 
 #include "item.hpp"
 
+#include <utility>
+
 #include "../common/constants.hpp"
 
 // PUBLIC
@@ -63,7 +65,7 @@ const QVector<Property> Item::properties() const {
 
 void Item::setProperty(const Property::Type propertyType, Property newObj) {
     if (m_properties.find(propertyType) != m_properties.end()) {
-        m_properties[propertyType] = newObj;
+        m_properties[propertyType] = std::move(newObj);
     }
 
     updateAfterProperty();

@@ -104,7 +104,7 @@ QVector<std::shared_ptr<CacheCell>> CacheGrid::queryCells(const QRect &rect) {
 
 void CacheGrid::markDirty(const QRect &rect) {
     QVector<std::shared_ptr<CacheCell>> dirtyCells{queryCells(rect)};
-    for (std::shared_ptr<CacheCell> cell : dirtyCells) {
+    for (const std::shared_ptr<CacheCell>& cell : dirtyCells) {
         cell->setDirty(true);
     }
 }
@@ -156,7 +156,7 @@ void CacheGrid::setSize(int newSize) {
 }
 
 void CacheGrid::markAllDirty() {
-    for (auto cell : m_grid) {
+    for (const auto& cell : m_grid) {
         cell->setDirty(true);
     }
 }
