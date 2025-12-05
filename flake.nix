@@ -40,6 +40,8 @@
                 qt6.qtbase
                 qtcreator
 
+                python3
+                llvmPackages_latest.clang-tools
                 cmake
                 bear
                 entr
