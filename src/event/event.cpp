@@ -18,7 +18,7 @@
 
 #include "event.hpp"
 
-Event::Event() {
+Event::Event() : m_button(Qt::NoButton) {
 }
 
 void Event::setPos(const QPoint &point, qreal const scale) {
