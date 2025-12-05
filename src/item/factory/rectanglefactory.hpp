@@ -25,5 +25,6 @@ class Item;
 class RectangleFactory : public ItemFactory {
 public:
     RectangleFactory();
+    ~RectangleFactory() = default;
     std::shared_ptr<Item> create() const override;
 };

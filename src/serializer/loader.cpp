@@ -181,8 +181,6 @@ std::shared_ptr<Item> Loader::createItem(const QJsonObject &obj) {
         item->setProperty(prop.type(), prop);
     }
 
-    item->setBoundingBoxPadding(value(obj, "bounding_box_padding").toInt());
-
     return item;
 }
 

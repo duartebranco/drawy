@@ -23,7 +23,7 @@
 
 int CacheCell::counter = 0;
 
-CacheCell::CacheCell(const QPoint &point) : m_point{point} {
+CacheCell::CacheCell(const QPoint &point) : m_point{point}, m_dirty(true) {
     m_image = std::make_unique<QPixmap>(CacheCell::cellSize());
     m_image->fill(Qt::transparent);
 
@@ -33,7 +33,7 @@ CacheCell::CacheCell(const QPoint &point) : m_point{point} {
     m_painter->setClipRegion(m_image->rect());
 
     CacheCell::counter++;
-    m_dirty = true;
+    
 }
 
 CacheCell::~CacheCell() {

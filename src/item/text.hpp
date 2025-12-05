@@ -58,7 +58,7 @@ public:
 
     const QString &text() const;
     void insertText(const QString &text);
-    void deleteSubStr(int start, int end);
+    void deleteSubStr(qsizetype start, qsizetype end);
     void deleteSelection();
 
     bool hasSelection() const;

@@ -23,5 +23,6 @@
 class FreeformFactory : public ItemFactory {
 public:
     FreeformFactory();
+    ~FreeformFactory() = default;
     std::shared_ptr<Item> create() const override;
 };

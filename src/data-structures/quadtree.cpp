@@ -33,8 +33,8 @@ QuadTree::QuadTree(QRectF region, int capacity) : m_boundingBox{region}, m_capac
 
 QuadTree::QuadTree(QRectF region, int capacity, std::shared_ptr<OrderedList> orderedList)
     : m_boundingBox{region},
-      m_capacity{capacity} {
-    m_orderedList = orderedList;
+      m_capacity{capacity}, m_orderedList(orderedList) {
+    
 }
 
 QuadTree::~QuadTree() {

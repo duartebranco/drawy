@@ -26,7 +26,7 @@ void EllipseItem::m_draw(QPainter &painter, const QPointF &offset) const {
 }
 
 bool EllipseItem::onEllipse(QLineF line) const {
-    int sw{m_boundingBoxPadding + property(Property::StrokeWidth).value<int>()};
+    int sw{boundingBoxPadding() + property(Property::StrokeWidth).value<int>()};
     double X{m_boundingBox.x() + sw}, Y{m_boundingBox.y() + sw};
     double W{m_boundingBox.width() - 2 * sw}, H{m_boundingBox.height() - 2 * sw};
 
@@ -44,8 +44,8 @@ bool EllipseItem::onEllipse(QLineF line) const {
 
     double A{ps * bs + qs * as};
     double B{2 * (x1 * p * bs - p * h * bs + y1 * q * as - q * k * as)};
-    double C{static_cast<long long>(x1) * x1 * bs + bs * h * h - 2 * x1 * h * bs +
-             static_cast<long long>(y1) * y1 * as + as * k * k - 2 * y1 * k * as - as * bs};
+    double C{x1 * x1 * bs + bs * h * h - 2 * x1 * h * bs +
+             y1 * y1 * as + as * k * k - 2 * y1 * k * as - as * bs};
 
     double discriminant{B * B - 4 * A * C};
     if (discriminant < 0)

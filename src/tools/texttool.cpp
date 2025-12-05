@@ -71,7 +71,6 @@ void TextTool::mousePressed(ApplicationContext *context) {
         if (intersectingItems.empty()) {
             if (m_curItem == nullptr) {
                 m_curItem = std::dynamic_pointer_cast<TextItem>(m_itemFactory->create());
-                m_curItem->setBoundingBoxPadding(10 * renderingContext.canvas().scale());
 
                 m_curItem->setProperty(Property::StrokeColor,
                                        uiContext.propertyManager().value(Property::StrokeColor));

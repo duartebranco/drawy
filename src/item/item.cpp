@@ -18,7 +18,7 @@
 
 #include "item.hpp"
 
-#include <algorithm>
+#include "../common/constants.hpp"
 
 // PUBLIC
 Item::Item() {
@@ -29,12 +29,8 @@ Item::~Item() {
 }
 
 const QRectF Item::boundingBox() const {
-    int mg{m_boundingBoxPadding};
+    int mg{boundingBoxPadding()};
     return m_boundingBox.adjusted(-mg, -mg, mg, mg);
-}
-
-void Item::setBoundingBoxPadding(int padding) {
-    m_boundingBoxPadding = padding;
 }
 
 const Property Item::property(const Property::Type propertyType) const {
@@ -77,5 +73,5 @@ void Item::updateAfterProperty() {}
 void Item::erase(QPainter &painter, const QPointF &offset) const {}
 
 int Item::boundingBoxPadding() const {
-    return m_boundingBoxPadding;
+    return Common::boundingBoxPadding;
 }

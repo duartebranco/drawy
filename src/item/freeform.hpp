@@ -40,7 +40,7 @@ public:
     void translate(const QPointF &amount) override;
 
     QVector<std::shared_ptr<Item>> split() const;
-    int size() const;
+    qsizetype size() const;
     int maxSize() const;
 
     virtual void addPoint(const QPointF &point, const qreal pressure, bool optimize = true);

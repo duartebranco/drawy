@@ -23,5 +23,6 @@
 class LineFactory : public ItemFactory {
 public:
     LineFactory();
+    ~LineFactory() = default;
     std::shared_ptr<Item> create() const override;
 };

@@ -23,5 +23,6 @@
 class TextFactory : public ItemFactory {
 public:
     TextFactory();
+    ~TextFactory() = default;
     std::shared_ptr<Item> create() const override;
 };
