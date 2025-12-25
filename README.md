@@ -1,7 +1,7 @@
 > [!NOTE]
-> Join our Discord server via the button below for the newest updates, announcements, and community discussions.
+> Drawy has moved to KDE Invent. This repository is kept only to track and resolve existing issues. Please open all new issues and pull requests on KDE Invent instead.
 >   
-> <a href="https://discord.gg/TUPwH24j"><img alt="Static Badge" src="https://img.shields.io/badge/Discord%20-%20Server?style=for-the-badge&logo=Discord&color=%23eee"></a>  
+> https://invent.kde.org/prayag/drawy
 
   
 <p align="center">
