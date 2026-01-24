@@ -2,12 +2,14 @@
 > Drawy has moved to KDE Invent. This repository is kept only to track and resolve existing issues. Please open all new issues and pull requests on KDE Invent instead.
 >   
 > https://invent.kde.org/prayag/drawy
+>
+> Please be aware that Drawy does **NOT** currently offer official packages in any public repository. However, official nightly packages are available on [KDE Invent](https://invent.kde.org/graphics/drawy/-/jobs?kind=BUILD)  
 
   
 <p align="center">
   <img src="assets/logo-256.png" width=100/>
   <h1 align="center">Drawy</h1>
-  <p align="center">Your handy, infinite, brainstorming tool!</center>
+  <p align="center">Your handy, infinite brainstorming tool!</center>
 </p>
 
 <p align="center">
@@ -62,59 +64,7 @@ Future releases will allow you to change the keyboard shortcuts. For now they ar
 | <kbd>Ctrl+O</kbd>                                                           | Open File         |
 
 # Contributing
-Contributions are welcome. Please read the [contributing guide](CONTRIBUTING.md) before opening pull requests.
+Please open merge requests on KDE Invent: https://invent.kde.org/graphics/drawy
 
 # License
 This project uses the GNU General Public License V3.
-
-# Support Me ♥
-If you liked this project, then please consider supporting me!  
-  
-<a href="https://liberapay.com/Prayag/donate"><img alt="Donate using Liberapay" src="https://img.shields.io/badge/LIBERAPAY-%231A171B?style=for-the-badge&logo=liberapay"/></a>
-<a href="https://ko-fi.com/O5O1FJ70D"><img alt="Buy Me A Coffee" src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-%234D798C?style=for-the-badge&logo=ko-fi"/></a>
-<a href="https://coindrop.to/prayagjain"><img alt="Done using PayPal" src="https://img.shields.io/badge/PayPal-%23F2BA37?style=for-the-badge&logo=paypal"/></a>
-
-# TODOs
-Started: `2025-01-02 04:40PM`  
-Development is divided into phases.  
-The project will eventually be open sourced. However, I will work on the first few phases myself, to maximize learning.  
-The following is a list of features I'll be planning to add to it:  
-
-## Phase 1 (Basic Features)
-- [x] A simple fixed size canvas to draw on using a black coloured stroke.
-- [x] Different shapes like rectangle, ellipse, arrow, line and stroke.
-- [x] An eraser to erase the strokes (deleting the strokes).
-- [x] Testing.
-
-## Phase 2
-- [x] Refactor to try to adhere to SOLID principles and utilize useful design patterns
-- [x] A custom Qt layout for toolbar and properties bar
-- [x] Make canvas infinite and add ability to move the viewport
-- [x] Use an LRU cache based uniform grid to optimize moving the canvas around (now 100% faster!!)
-- [x] A properties bar to change the following properties:
-    - [x] Colour of strokes
-    - [x] Stroke width  
-  
-## Phase 3
-- [x] Buttons to zoom in/out
-- [x] Pressure senstivity for drawing tablets
-- [x] Selection tool to select items and do these actions:
-    - [x] Move items
-    - [x] Delete items
-    - [ ] Transform items (resize) (Low priority)
-    - [ ] Rotate items (Low priority)
-- [x] Undo/redo support
-- [x] Basic keybinding support
-- [x] Saving the drawings
-- [x] Text support
-- [ ] Exporting drawings to PNGs
-- [ ] Image support
-- [ ] Text formatting like bold, underline, italics, etc.
-- [ ] Better freeform smoothing algorithms
-- [ ] Allow snapping
-- [ ] Ability to store preferences
-- [ ] A "settings" page 
-- [ ] Better widgets
-- [ ] Online collaboration
-
-Feature requests are welcome!
