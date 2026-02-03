@@ -117,23 +117,41 @@ QJsonObject Serializer::toJson(const QPointF &point) {
     return result;
 }
 
+QString Serializer::getCurrentFilePath() const {
+    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QFile settingsFile(settingsPath);
+    
+    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
+        QByteArray data = settingsFile.readAll();
+        settingsFile.close();
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            return obj.value("lastOpenedFile").toString("");
+        }
+    }
+    
+    return QString();
+}
+
 void Serializer::saveToFile() {
     QJsonDocument doc{m_object};
 
-    qDebug() << "Saving...";
+    QString fileName = getCurrentFilePath();
+    
+    // If no file is currently open, show save dialog
+    if (fileName.isEmpty() || !QFile::exists(fileName)) {
+        QDir homeDir{QDir::home()};
 
-    QDir homeDir{QDir::home()};
+        auto text = std::format("Untitled.{}", Common::drawyFileExt);
+        QString defaultFilePath = homeDir.filePath(text.data());
 
-    auto text = std::format("Untitled.{}", Common::drawyFileExt);
-    QString defaultFilePath = homeDir.filePath(text.data());
+        text = std::format("Drawy (*.{})", Common::drawyFileExt);
+        fileName = QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data());
 
-    text = std::format("Drawy (*.{})", Common::drawyFileExt);
-    QString fileName{
-        QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data())};
-
-    if (fileName.isEmpty()) {
-        qDebug() << "Save cancelled by user";
-        return;
+        if (fileName.isEmpty()) {
+            return;
+        }
     }
 
     auto data{doc.toJson(QJsonDocument::Compact)};
@@ -152,8 +170,6 @@ void Serializer::saveToFile() {
         return;
     }
 
-    qDebug() << "Saved to file: " << fileName;
-    
     // Save the file path to settings
     saveLastOpenedFile(fileName);
 }
