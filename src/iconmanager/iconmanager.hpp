@@ -46,6 +46,7 @@ public:
         ACTION_GROUP,
         ACTION_UNGROUP,
         ACTION_DELETE,
+        ACTION_SETTINGS,
         UI_ANGLE_UP,
         UI_ANGLE_DOWN,
     };

@@ -24,6 +24,7 @@
 #include "../components/actionbar.hpp"
 #include "../components/propertybar.hpp"
 #include "../components/toolbar.hpp"
+#include "../components/settingsdialog.hpp"
 #include "../event/event.hpp"
 #include "../keybindings/actionmanager.hpp"
 #include "../keybindings/keybindmanager.hpp"
@@ -61,6 +62,7 @@ void UIContext::setUIContext() {
     m_keybindManager = new KeybindManager(&m_applicationContext->renderingContext().canvas());
     m_actionManager = new ActionManager(m_applicationContext);
     m_iconManager = new IconManager(m_applicationContext);
+    m_settingsDialog = new SettingsDialog(m_applicationContext, m_applicationContext->parentWidget());
 
     m_propertyManager = new PropertyManager(m_propertyBar);
     m_propertyBar->setPropertyManager(m_propertyManager);
@@ -90,6 +92,7 @@ void UIContext::setUIContext() {
     m_actionBar->addButton("Light Mode", IconManager::ACTION_LIGHT_MODE, 3);
     m_actionBar->addButton("Undo", IconManager::ACTION_UNDO, 4);
     m_actionBar->addButton("Redo", IconManager::ACTION_REDO, 5);
+    m_actionBar->addButton("Settings", IconManager::ACTION_SETTINGS, 8);
 
     QObject::connect(m_toolBar, &ToolBar::toolChanged, this, &UIContext::toolChanged);
     QObject::connect(m_toolBar,
@@ -146,6 +149,10 @@ void UIContext::setUIContext() {
 
         m_applicationContext->renderingContext().markForRender();
         m_applicationContext->renderingContext().markForUpdate();
+    });
+
+    QObject::connect(&m_actionBar->button(8), &QPushButton::clicked, this, [this]() {
+        m_settingsDialog->showCentered();
     });
 
     m_propertyBar->updateProperties(m_toolBar->curTool());

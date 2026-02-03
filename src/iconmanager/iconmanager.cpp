@@ -41,6 +41,7 @@ IconManager::IconManager(QObject *parent) : QObject{parent} {
                   {ACTION_GROUP, "action-group"},
                   {ACTION_UNGROUP, "action-ungroup"},
                   {ACTION_DELETE, "action-delete"},
+                  {ACTION_SETTINGS, "action-settings"},
                   {UI_ANGLE_DOWN, "ui-angle_up"},
                   {UI_ANGLE_UP, "ui-angle_down"}};
 }

@@ -27,6 +27,7 @@
         <file>icons/fa-dark/action-delete.svg</file>
         <file>icons/fa-dark/action-dark_mode.svg</file>
         <file>icons/fa-dark/action-light_mode.svg</file>
+        <file>icons/fa-dark/action-settings.svg</file>
         <file>icons/fa-dark/ui-angle_up.svg</file>
         <file>icons/fa-dark/ui-angle_down.svg</file>
         <file>icons/fa-light/tool-selection.svg</file>
@@ -49,6 +50,7 @@
         <file>icons/fa-light/action-delete.svg</file>
         <file>icons/fa-light/action-dark_mode.svg</file>
         <file>icons/fa-light/action-light_mode.svg</file>
+        <file>icons/fa-light/action-settings.svg</file>
         <file>icons/fa-light/ui-angle_up.svg</file>
         <file>icons/fa-light/ui-angle_down.svg</file>
     </qresource>

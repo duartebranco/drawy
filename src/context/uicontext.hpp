@@ -22,6 +22,7 @@
 class ToolBar;
 class PropertyBar;
 class ActionBar;
+class SettingsDialog;
 class Event;
 class PropertyManager;
 class Tool;
@@ -55,6 +56,7 @@ private:
     ToolBar *m_toolBar{nullptr};
     PropertyBar *m_propertyBar{};
     ActionBar *m_actionBar{};
+    SettingsDialog *m_settingsDialog{nullptr};
     PropertyManager *m_propertyManager{};
     KeybindManager *m_keybindManager{};
     ActionManager *m_actionManager{};
