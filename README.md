@@ -14,8 +14,8 @@ This fork has some new features that i found indispensable and i wanted to have 
 - **Settings tab**;
 - **Remember theme mode preference**;
 - **Open last edited file**;
-- **Save same file when its being edited**;
-- **Possible more in the future ...**
+- **'Save As' and 'Save' distinction**;
+- **Suport for keyboard shortcuts in text editing mode**;
 
 I did this _fast_ and _just_ for me.
 

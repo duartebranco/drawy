@@ -63,8 +63,9 @@ void TextTool::mousePressed(ApplicationContext *context) {
         CommandHistory &commandHistory{spatialContext.commandHistory()};
 
         QPointF worldPos{transformer.viewToWorld(uiContext.event().pos())};
-        QVector<std::shared_ptr<Item>> intersectingItems{
-            quadTree.queryItems(worldPos, [](const std::shared_ptr<Item>& item, const QPointF &point) {
+        QVector<std::shared_ptr<Item>> intersectingItems{quadTree.queryItems(
+            worldPos,
+            [](const std::shared_ptr<Item> &item, const QPointF &point) {
                 return item->type() == Item::Text && item->boundingBox().contains(point);
             })};
 
@@ -128,7 +129,7 @@ void TextTool::mouseMoved(ApplicationContext *context) {
 
     QPointF worldPos{transformer.viewToWorld(uiContext.event().pos())};
     QVector<std::shared_ptr<Item>> intersectingItems{
-        quadTree.queryItems(worldPos, [](const std::shared_ptr<Item>& item, const QPointF &point) {
+        quadTree.queryItems(worldPos, [](const std::shared_ptr<Item> &item, const QPointF &point) {
             return item->type() == Item::Text && item->boundingBox().contains(point);
         })};
 
@@ -416,6 +417,60 @@ void TextTool::keyPressed(ApplicationContext *context) {
                     m_curItem->setCaret(nextLineStart + pos - 1, false);
                 } else {
                     m_curItem->setCaret(nextLineEnd, false);
+                }
+                break;
+            }
+            case Qt::Key_Home: {
+                // Move caret to the beginning of the current line or document start
+                if (ev.modifiers() & Qt::ControlModifier) {
+                    // Ctrl+Home: Move to the beginning of the entire document
+                    if (ev.modifiers() & Qt::ShiftModifier) {
+                        // Ctrl+Shift+Home: Select from current position to document start
+                        qsizetype selEnd{m_curItem->selectionEnd()};
+                        m_curItem->setSelectionEnd(selEnd == -1 ? 0 : 0);
+                    } else {
+                        // Move to document start
+                        m_curItem->setCaret(0, false);
+                    }
+                } else {
+                    // Home: Move to the beginning of the current line
+                    auto [lineStart, lineEnd]{m_curItem->getLineRange(caret)};
+
+                    if (ev.modifiers() & Qt::ShiftModifier) {
+                        // Shift+Home: Select from current position to line start
+                        qsizetype selEnd{m_curItem->selectionEnd()};
+                        m_curItem->setSelectionEnd(selEnd == -1 ? lineStart : lineStart);
+                    } else {
+                        // Clear selection and move to line start
+                        m_curItem->setCaret(lineStart, false);
+                    }
+                }
+                break;
+            }
+            case Qt::Key_End: {
+                // Move caret to the end of the current line or document end
+                if (ev.modifiers() & Qt::ControlModifier) {
+                    // Ctrl+End: Move to the end of the entire document
+                    if (ev.modifiers() & Qt::ShiftModifier) {
+                        // Ctrl+Shift+End: Select from current position to document end
+                        qsizetype selEnd{m_curItem->selectionEnd()};
+                        m_curItem->setSelectionEnd(selEnd == -1 ? size : size);
+                    } else {
+                        // Move to document end
+                        m_curItem->setCaret(size, false);
+                    }
+                } else {
+                    // End: Move to the end of the current line
+                    auto [lineStart, lineEnd]{m_curItem->getLineRange(caret)};
+
+                    if (ev.modifiers() & Qt::ShiftModifier) {
+                        // Shift+End: Select from current position to line end
+                        qsizetype selEnd{m_curItem->selectionEnd()};
+                        m_curItem->setSelectionEnd(selEnd == -1 ? lineEnd : lineEnd);
+                    } else {
+                        // Clear selection and move to line end
+                        m_curItem->setCaret(lineEnd, false);
+                    }
                 }
                 break;
             }
