@@ -44,6 +44,7 @@ public:
     void groupItems();
     void ungroupItems();
     void saveToFile();
+    void saveCurrentFile();
     void loadFromFile();
 
 private:

@@ -17,12 +17,15 @@
  */
 
 #include "actionmanager.hpp"
-#include "../command/selectcommand.hpp"
+
+#include <memory>
+
+#include "../command/commandhistory.hpp"
 #include "../command/deselectcommand.hpp"
 #include "../command/groupcommand.hpp"
-#include "../command/ungroupcommand.hpp"
-#include "../command/commandhistory.hpp"
 #include "../command/removeitemcommand.hpp"
+#include "../command/selectcommand.hpp"
+#include "../command/ungroupcommand.hpp"
 #include "../components/propertybar.hpp"
 #include "../components/toolbar.hpp"
 #include "../context/applicationcontext.hpp"
@@ -37,7 +40,6 @@
 #include "../serializer/serializer.hpp"
 #include "action.hpp"
 #include "keybindmanager.hpp"
-#include <memory>
 
 ActionManager::ActionManager(ApplicationContext *context) : m_context{context}, QObject(context) {
     KeybindManager &keybindManager{m_context->uiContext().keybindManager()};
@@ -98,31 +100,34 @@ ActionManager::ActionManager(ApplicationContext *context) : m_context{context}, 
                                       context}};
 
     Action *groupAction{new Action{"Group Elements",
-                                      "Groups selected items",
-                                      [&]() { this->groupItems(); },
-                                      context}};
+                                   "Groups selected items",
+                                   [&]() { this->groupItems(); },
+                                   context}};
 
     Action *unGroupAction{new Action{"Ungroup Elements",
-                                      "Ungroups selected groups",
-                                      [&]() { this->ungroupItems(); },
-                                      context}};
+                                     "Ungroups selected groups",
+                                     [&]() { this->ungroupItems(); },
+                                     context}};
 
-    Action *selectAllAction{new Action{
-        "Select All",
-        "Select all items",
-        [&, context]() { this->selectAll(); },
-        context}};
+    Action *selectAllAction{new Action{"Select All",
+                                       "Select all items",
+                                       [&, context]() { this->selectAll(); },
+                                       context}};
 
-    Action *deleteAction{new Action{
-        "Delete",
-        "Deletes selected items",
-        [&, context]() { this->deleteSelection(); },
-        context}};
+    Action *deleteAction{new Action{"Delete",
+                                    "Deletes selected items",
+                                    [&, context]() { this->deleteSelection(); },
+                                    context}};
 
     Action *saveAction{new Action{"Save",
-                                  "Save canvas",
-                                  [&, context]() { this->saveToFile(); },
+                                  "Save current file",
+                                  [&, context]() { this->saveCurrentFile(); },
                                   context}};
+
+    Action *saveAsAction{new Action{"Save As",
+                                    "Save canvas to a new file",
+                                    [&, context]() { this->saveToFile(); },
+                                    context}};
 
     Action *openFileAction{new Action{"Open File",
                                       "Open an existing file",
@@ -147,6 +152,7 @@ ActionManager::ActionManager(ApplicationContext *context) : m_context{context}, 
     keybindManager.addKeybinding(selectAllAction, "Ctrl+A");
     keybindManager.addKeybinding(deleteAction, "Delete");
     keybindManager.addKeybinding(saveAction, "Ctrl+S");
+    keybindManager.addKeybinding(saveAsAction, "Ctrl+Shift+S");
     keybindManager.addKeybinding(openFileAction, "Ctrl+O");
     keybindManager.addKeybinding(groupAction, "Ctrl+G");
     keybindManager.addKeybinding(unGroupAction, "Ctrl+Shift+G");
@@ -243,17 +249,14 @@ void ActionManager::deleteSelection() {
 
     QVector<std::shared_ptr<Item>> selectedItemsVector{selectedItems.begin(), selectedItems.end()};
     m_context->spatialContext().commandHistory().insert(
-        std::make_shared<DeselectCommand>(selectedItemsVector)
-    );
+        std::make_shared<DeselectCommand>(selectedItemsVector));
 }
 
 void ActionManager::selectAll() {
     this->switchToSelectionTool();
 
     auto allItems{m_context->spatialContext().quadtree().getAllItems()};
-    m_context->spatialContext().commandHistory().insert(
-        std::make_shared<SelectCommand>(allItems)
-    );
+    m_context->spatialContext().commandHistory().insert(std::make_shared<SelectCommand>(allItems));
 
     m_context->uiContext().propertyBar().updateToolProperties();
     m_context->renderingContext().markForRender();
@@ -265,6 +268,17 @@ void ActionManager::saveToFile() {
 
     serializer.serialize(m_context);
     serializer.saveToFile();
+}
+
+void ActionManager::saveCurrentFile() {
+    // Save to the currently open file, or show Save As dialog if no file is open
+    Serializer serializer{};
+
+    serializer.serialize(m_context);
+    if (!serializer.saveCurrentFile()) {
+        // If no current file exists, fall back to Save As dialog
+        serializer.saveToFile();
+    }
 }
 
 void ActionManager::loadFromFile() {
