@@ -98,9 +98,9 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::m_tryLoadLastOpenedFile(ApplicationContext *context) {
-    // Build the path to the settings file in the user's home directory
-    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                         "/.drawy/settings.json"};
+    // Build the path to the settings file in the ~/.config/drawy directory
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
+                         "/drawy/settings.json"};
     QFile settingsFile{settingsPath};
 
     // Read the settings file to check if auto-restore is enabled

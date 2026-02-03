@@ -118,9 +118,9 @@ QJsonObject Serializer::toJson(const QPointF &point) {
 }
 
 QString Serializer::getCurrentFilePath() const {
-    // Build the path to the settings file in the user's home directory
-    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                         "/.drawy/settings.json"};
+    // Build the path to the settings file in the ~/.config/drawy directory
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
+                         "/drawy/settings.json"};
     QFile settingsFile{settingsPath};
 
     // Read the last opened file path from settings if the file exists
@@ -223,8 +223,8 @@ bool Serializer::saveCurrentFile() {
 }
 
 void Serializer::saveLastOpenedFile(const QString &filePath) const {
-    QString settingsPath =
-        QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
+                         "/drawy/settings.json"};
     QFile settingsFile(settingsPath);
 
     QJsonDocument settingsDoc;

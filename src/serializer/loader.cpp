@@ -115,8 +115,8 @@ void Loader::loadFromFilePath(ApplicationContext *context, const QString &filePa
     context->renderingContext().markForUpdate();
 
     // Persist the loaded file path to settings for future auto-restore functionality
-    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                         "/.drawy/settings.json"};
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) +
+                         "/drawy/settings.json"};
     QFile settingsFile{settingsPath};
 
     QJsonObject settingsObject{};

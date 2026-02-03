@@ -246,9 +246,9 @@ void SettingsDialog::m_setupUI() {
 }
 
 QString SettingsDialog::m_getSettingsFilePath() const {
-    // Build the path to the settings file in the .drawy directory
-    QString drawyDirectoryPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                               "/.drawy"};
+    // Build the path to the settings file in the ~/.config/drawy directory
+    QString drawyDirectoryPath{
+        QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + "/drawy"};
     QDir drawyDir{drawyDirectoryPath};
 
     // Create the directory if it doesn't exist
