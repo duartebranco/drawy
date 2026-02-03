@@ -20,6 +20,9 @@
 
 #include <QDialog>
 #include <QComboBox>
+#include <QCheckBox>
+#include <QPushButton>
+#include <QString>
 
 class ApplicationContext;
 
@@ -31,12 +34,20 @@ public:
     ~SettingsDialog() override;
 
     void showCentered();
+    bool shouldRestoreLastFile() const;
+
+private slots:
+    void m_onCloseClicked();
 
 private:
     void m_setupUI();
     void m_loadSettings();
     void m_saveSettings();
+    QString m_getSettingsFilePath() const;
 
     ApplicationContext *m_context{nullptr};
     QComboBox *m_themeComboBox{nullptr};
+    QCheckBox *m_restoreLastFileCheckBox{nullptr};
+    QPushButton *m_closeButton{nullptr};
+    bool m_restoreLastFile{false};
 };

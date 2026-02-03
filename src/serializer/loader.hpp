@@ -27,6 +27,7 @@ class Property;
 class Loader {
 public:
     void loadFromFile(ApplicationContext *context);
+    void loadFromFilePath(ApplicationContext *context, const QString &filePath);
 
 private:
     static std::shared_ptr<Item> createItem(const QJsonObject &obj);

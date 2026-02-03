@@ -27,11 +27,18 @@
 #include "../components/actionbar.hpp"
 #include "../components/propertybar.hpp"
 #include "../components/toolbar.hpp"
+#include "../components/settingsdialog.hpp"
 #include "../context/applicationcontext.hpp"
 #include "../context/renderingcontext.hpp"
 #include "../context/uicontext.hpp"
 #include "../controller/controller.hpp"
+#include "../serializer/loader.hpp"
 #include "boardlayout.hpp"
+
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QStandardPaths>
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     this->m_applyCustomStyles();
@@ -52,6 +59,28 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
     layout->setTopWidget(&uiContext.toolBar());
     layout->setBottomWidget(&uiContext.actionBar());
     layout->setCentralWidget(&renderingContext.canvas());
+
+    // Auto-load last opened file if enabled
+    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QFile settingsFile(settingsPath);
+    
+    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
+        QByteArray data = settingsFile.readAll();
+        settingsFile.close();
+        
+        QJsonDocument doc = QJsonDocument::fromJson(data);
+        if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            
+            bool restoreLastFile = obj.value("restoreLastFile").toBool(false);
+            QString lastOpenedFile = obj.value("lastOpenedFile").toString("");
+            
+            if (restoreLastFile && !lastOpenedFile.isEmpty()) {
+                Loader loader;
+                loader.loadFromFilePath(context, lastOpenedFile);
+            }
+        }
+    }
 
     QObject::connect(&renderingContext.canvas(),
                      &Canvas::mousePressed,

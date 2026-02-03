@@ -31,6 +31,7 @@ public:
 
     void serialize(ApplicationContext *context);
     void saveToFile();
+    void saveLastOpenedFile(const QString &filePath) const;
 
 private:
     static QJsonObject toJson(const QRectF &rect);

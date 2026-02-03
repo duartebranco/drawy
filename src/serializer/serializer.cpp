@@ -22,6 +22,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QStandardPaths>
+#include <QFile>
 #include <format>
 #include <memory>
 
@@ -130,17 +131,57 @@ void Serializer::saveToFile() {
     QString fileName{
         QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data())};
 
+    if (fileName.isEmpty()) {
+        qDebug() << "Save cancelled by user";
+        return;
+    }
+
     auto data{doc.toJson(QJsonDocument::Compact)};
     auto compressedData{Common::Utils::Compression::compressData(data)};
 
     QFile file{fileName};
-    file.open(QIODevice::WriteOnly);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to open file for writing:" << file.errorString();
+        return;
+    }
     qint64 written = file.write(compressedData);
     file.close();
 
     if (written != compressedData.size()) {
         qWarning() << "Warning: not all bytes were written";
+        return;
     }
 
     qDebug() << "Saved to file: " << fileName;
+    
+    // Save the file path to settings
+    saveLastOpenedFile(fileName);
+}
+
+void Serializer::saveLastOpenedFile(const QString &filePath) const {
+    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QFile settingsFile(settingsPath);
+    
+    QJsonDocument settingsDoc;
+    QJsonObject settingsObj;
+    
+    // Read existing settings
+    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
+        QByteArray data = settingsFile.readAll();
+        settingsFile.close();
+        settingsDoc = QJsonDocument::fromJson(data);
+        if (settingsDoc.isObject()) {
+            settingsObj = settingsDoc.object();
+        }
+    }
+    
+    // Update with new file path
+    settingsObj.insert("lastOpenedFile", filePath);
+    settingsDoc.setObject(settingsObj);
+    
+    // Write back
+    if (settingsFile.open(QIODevice::WriteOnly)) {
+        settingsFile.write(settingsDoc.toJson());
+        settingsFile.close();
+    }
 }

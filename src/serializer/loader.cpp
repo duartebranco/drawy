@@ -24,6 +24,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
+#include <QStandardPaths>
 #include <memory>
 
 #include "../common/constants.hpp"
@@ -51,9 +52,13 @@ void Loader::loadFromFile(ApplicationContext *context) {
     if (fileName.isEmpty())
         return;
 
-    QFile file{fileName};
+    loadFromFilePath(context, fileName);
+}
+
+void Loader::loadFromFilePath(ApplicationContext *context, const QString &filePath) {
+    QFile file{filePath};
     if (!file.open(QIODevice::ReadOnly)) {
-        qWarning() << "Failed to open file:" << file.errorString();
+        qWarning() << "[Loader] Failed to open file:" << file.errorString();
         return;
     }
 
@@ -108,6 +113,36 @@ void Loader::loadFromFile(ApplicationContext *context) {
     context->spatialContext().cacheGrid().markAllDirty();
     context->renderingContext().markForRender();
     context->renderingContext().markForUpdate();
+    
+    // Save the last opened file path
+    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QFile settingsFile(settingsPath);
+    
+    QJsonObject settingsObj;
+    
+    // Read existing settings
+    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
+        QByteArray data = settingsFile.readAll();
+        settingsFile.close();
+        QJsonDocument settingsDoc = QJsonDocument::fromJson(data);
+        if (settingsDoc.isObject()) {
+            settingsObj = settingsDoc.object();
+        }
+    }
+    
+    // Update with new file path
+    settingsObj["lastOpenedFile"] = filePath;
+    
+    QJsonDocument outDoc(settingsObj);
+    QByteArray jsonData = outDoc.toJson();
+    
+    // Write back
+    if (settingsFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        settingsFile.write(jsonData);
+        settingsFile.close();
+    } else {
+        qWarning() << "[Loader] Failed to save last opened file path:" << settingsFile.errorString();
+    }
 }
 
 std::shared_ptr<Item> Loader::createItem(const QJsonObject &obj) {
