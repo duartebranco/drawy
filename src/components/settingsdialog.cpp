@@ -47,16 +47,14 @@ SettingsDialog::~SettingsDialog() {
 
 void SettingsDialog::m_setupUI() {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(15);
-    mainLayout->setContentsMargins(20, 20, 20, 20);
+    mainLayout->setSpacing(0);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     
     // Create a container widget with background
     QWidget *containerWidget = new QWidget(this);
     containerWidget->setStyleSheet(
         "QWidget {"
         "  background-color: #ffffff;"
-        "  border: 1px solid #e0e0e0;"
-        "  border-radius: 12px;"
         "}"
     );
     
@@ -66,14 +64,7 @@ void SettingsDialog::m_setupUI() {
     
     // Title
     QLabel *titleLabel = new QLabel("Settings", this);
-    titleLabel->setStyleSheet(
-        "QLabel {"
-        "  font-size: 18px;"
-        "  font-weight: bold;"
-        "  color: #1a1a1a;"
-        "  margin-bottom: 10px;"
-        "}"
-    );
+    titleLabel->setStyleSheet("");
     containerLayout->addWidget(titleLabel);
     
     // Separator line
@@ -87,14 +78,8 @@ void SettingsDialog::m_setupUI() {
     QHBoxLayout *themeLayout = new QHBoxLayout();
     themeLayout->setSpacing(10);
     
-    QLabel *themeLabel = new QLabel("Theme Mode:", this);
-    themeLabel->setStyleSheet(
-        "QLabel {"
-        "  font-size: 12px;"
-        "  color: #333333;"
-        "  font-weight: 500;"
-        "}"
-    );
+    QLabel *themeLabel = new QLabel("Theme Mode", this);
+    themeLabel->setStyleSheet("");
     themeLabel->setMinimumWidth(80);
     
     m_themeComboBox = new QComboBox(this);
@@ -168,7 +153,6 @@ void SettingsDialog::m_setupUI() {
     });
     
     this->setLayout(mainLayout);
-    this->setFixedSize(400, 180);
 }
 
 void SettingsDialog::m_loadSettings() {
