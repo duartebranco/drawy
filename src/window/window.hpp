@@ -20,6 +20,8 @@
 
 #include <QWidget>
 
+class ApplicationContext;
+
 class MainWindow : public QWidget {
     Q_OBJECT
 
@@ -30,4 +32,5 @@ public:
 private:
     bool m_config_useSystemStyles{true};
     void m_applyCustomStyles();
+    void m_tryLoadLastOpenedFile(ApplicationContext *context);
 };

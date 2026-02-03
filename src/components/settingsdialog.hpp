@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include <QDialog>
-#include <QComboBox>
 #include <QCheckBox>
+#include <QComboBox>
+#include <QDialog>
 #include <QPushButton>
 #include <QString>
 

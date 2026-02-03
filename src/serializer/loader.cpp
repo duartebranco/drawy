@@ -23,8 +23,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QString>
 #include <QStandardPaths>
+#include <QString>
 #include <memory>
 
 #include "../common/constants.hpp"
@@ -113,35 +113,37 @@ void Loader::loadFromFilePath(ApplicationContext *context, const QString &filePa
     context->spatialContext().cacheGrid().markAllDirty();
     context->renderingContext().markForRender();
     context->renderingContext().markForUpdate();
-    
-    // Save the last opened file path
-    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
-    QFile settingsFile(settingsPath);
-    
-    QJsonObject settingsObj;
-    
-    // Read existing settings
+
+    // Persist the loaded file path to settings for future auto-restore functionality
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+                         "/.drawy/settings.json"};
+    QFile settingsFile{settingsPath};
+
+    QJsonObject settingsObject{};
+
+    // Read existing settings to preserve other keys (e.g., theme, restoreLastFile)
     if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
-        QByteArray data = settingsFile.readAll();
+        QByteArray fileContent{settingsFile.readAll()};
         settingsFile.close();
-        QJsonDocument settingsDoc = QJsonDocument::fromJson(data);
-        if (settingsDoc.isObject()) {
-            settingsObj = settingsDoc.object();
+        QJsonDocument existingSettingsDoc{QJsonDocument::fromJson(fileContent)};
+        if (existingSettingsDoc.isObject()) {
+            settingsObject = existingSettingsDoc.object();
         }
     }
-    
-    // Update with new file path
-    settingsObj["lastOpenedFile"] = filePath;
-    
-    QJsonDocument outDoc(settingsObj);
-    QByteArray jsonData = outDoc.toJson();
-    
-    // Write back
+
+    // Update with the newly loaded file path
+    settingsObject["lastOpenedFile"] = filePath;
+
+    QJsonDocument settingsDocument{settingsObject};
+    QByteArray jsonContent{settingsDocument.toJson()};
+
+    // Write the updated settings back to file
     if (settingsFile.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        settingsFile.write(jsonData);
+        settingsFile.write(jsonContent);
         settingsFile.close();
     } else {
-        qWarning() << "[Loader] Failed to save last opened file path:" << settingsFile.errorString();
+        qWarning() << "[Loader] Failed to save last opened file path:"
+                   << settingsFile.errorString();
     }
 }
 

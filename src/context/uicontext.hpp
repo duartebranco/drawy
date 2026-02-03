@@ -32,6 +32,17 @@ class ActionManager;
 class IconManager;
 
 class UIContext : public QObject {
+    // Action bar button IDs for clarity and maintainability
+    static constexpr int BUTTON_ID_ZOOM_OUT{1};
+    static constexpr int BUTTON_ID_ZOOM_IN{2};
+    static constexpr int BUTTON_ID_LIGHT_MODE{3};
+    static constexpr int BUTTON_ID_UNDO{4};
+    static constexpr int BUTTON_ID_REDO{5};
+    static constexpr int BUTTON_ID_SAVE_AS{6};
+    static constexpr int BUTTON_ID_OPEN_FILE{7};
+    static constexpr int BUTTON_ID_SETTINGS{8};
+    static constexpr int BUTTON_ID_SAVE{9};
+
 public:
     UIContext(ApplicationContext *context);
     ~UIContext() override;

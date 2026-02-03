@@ -21,13 +21,17 @@
 #include <QButtonGroup>
 #include <QFile>
 #include <QFontDatabase>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QShortcut>
+#include <QStandardPaths>
+#include <QTextStream>
 
 #include "../canvas/canvas.hpp"
 #include "../components/actionbar.hpp"
 #include "../components/propertybar.hpp"
-#include "../components/toolbar.hpp"
 #include "../components/settingsdialog.hpp"
+#include "../components/toolbar.hpp"
 #include "../context/applicationcontext.hpp"
 #include "../context/renderingcontext.hpp"
 #include "../context/uicontext.hpp"
@@ -35,12 +39,10 @@
 #include "../serializer/loader.hpp"
 #include "boardlayout.hpp"
 
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QStandardPaths>
+// Constants for layout configuration
+static constexpr int LAYOUT_MARGIN{10};
 
-MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
+MainWindow::MainWindow(QWidget *parent) : QWidget{parent} {
     this->m_applyCustomStyles();
 
     BoardLayout *layout{new BoardLayout(this)};
@@ -54,34 +56,16 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 
     this->setLayout(layout);
 
-    layout->setMargins(10);
+    layout->setMargins(LAYOUT_MARGIN);
     layout->setLeftWidget(&uiContext.propertyBar());
     layout->setTopWidget(&uiContext.toolBar());
     layout->setBottomWidget(&uiContext.actionBar());
     layout->setCentralWidget(&renderingContext.canvas());
 
-    // Auto-load last opened file if enabled
-    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
-    QFile settingsFile(settingsPath);
-    
-    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
-        QByteArray data = settingsFile.readAll();
-        settingsFile.close();
-        
-        QJsonDocument doc = QJsonDocument::fromJson(data);
-        if (doc.isObject()) {
-            QJsonObject obj = doc.object();
-            
-            bool restoreLastFile = obj.value("restoreLastFile").toBool(false);
-            QString lastOpenedFile = obj.value("lastOpenedFile").toString("");
-            
-            if (restoreLastFile && !lastOpenedFile.isEmpty()) {
-                Loader loader;
-                loader.loadFromFilePath(context, lastOpenedFile);
-            }
-        }
-    }
+    // Attempt to auto-load the last opened file if the user has enabled that setting
+    m_tryLoadLastOpenedFile(context);
 
+    // Connect canvas events to the controller for proper input handling
     QObject::connect(&renderingContext.canvas(),
                      &Canvas::mousePressed,
                      controller,
@@ -113,23 +97,53 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent) {
 MainWindow::~MainWindow() {
 }
 
+void MainWindow::m_tryLoadLastOpenedFile(ApplicationContext *context) {
+    // Build the path to the settings file in the user's home directory
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+                         "/.drawy/settings.json"};
+    QFile settingsFile{settingsPath};
+
+    // Read the settings file to check if auto-restore is enabled
+    if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
+        QByteArray fileContent{settingsFile.readAll()};
+        settingsFile.close();
+
+        QJsonDocument settingsDocument{QJsonDocument::fromJson(fileContent)};
+        if (settingsDocument.isObject()) {
+            QJsonObject settingsObject{settingsDocument.object()};
+
+            // Check if the user has enabled "restore last file" setting
+            bool restoreLastFileEnabled{settingsObject.value("restoreLastFile").toBool(false)};
+            QString lastOpenedFilePath{settingsObject.value("lastOpenedFile").toString("")};
+
+            // If enabled and a file path is stored, attempt to load it
+            if (restoreLastFileEnabled && !lastOpenedFilePath.isEmpty()) {
+                Loader fileLoader{};
+                fileLoader.loadFromFilePath(context, lastOpenedFilePath);
+            }
+        }
+    }
+}
+
 void MainWindow::m_applyCustomStyles() {
-    QFile file(":/styles/style.qss");
-    if (file.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream stream(&file);
-        QString qss = stream.readAll();
-        this->setStyleSheet(qss);
+    // Load and apply the custom stylesheet
+    QFile styleFile{":/styles/style.qss"};
+    if (styleFile.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream styleStream{&styleFile};
+        QString styleSheet{styleStream.readAll()};
+        this->setStyleSheet(styleSheet);
     } else {
         qWarning() << "Failed to load stylesheet.";
     }
 
-    int fontID = QFontDatabase::addApplicationFont(":/fonts/FuzzyBubbles.ttf");
-    if (fontID == -1) {
+    // Load custom fonts used in the application
+    int fuzzyBubblesId{QFontDatabase::addApplicationFont(":/fonts/FuzzyBubbles.ttf")};
+    if (fuzzyBubblesId == -1) {
         qWarning() << "Failed to load font: FuzzyBubbles";
     }
 
-    fontID = QFontDatabase::addApplicationFont(":/fonts/Inter.ttf");
-    if (fontID == -1) {
+    int interFontId{QFontDatabase::addApplicationFont(":/fonts/Inter.ttf")};
+    if (interFontId == -1) {
         qWarning() << "Failed to load font: Inter";
     }
 }

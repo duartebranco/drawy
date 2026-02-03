@@ -23,8 +23,8 @@
 #include "../common/renderitems.hpp"
 #include "../components/actionbar.hpp"
 #include "../components/propertybar.hpp"
-#include "../components/toolbar.hpp"
 #include "../components/settingsdialog.hpp"
+#include "../components/toolbar.hpp"
 #include "../event/event.hpp"
 #include "../keybindings/actionmanager.hpp"
 #include "../keybindings/keybindmanager.hpp"
@@ -62,7 +62,8 @@ void UIContext::setUIContext() {
     m_keybindManager = new KeybindManager(&m_applicationContext->renderingContext().canvas());
     m_actionManager = new ActionManager(m_applicationContext);
     m_iconManager = new IconManager(m_applicationContext);
-    m_settingsDialog = new SettingsDialog(m_applicationContext, m_applicationContext->parentWidget());
+    m_settingsDialog =
+        new SettingsDialog(m_applicationContext, m_applicationContext->parentWidget());
 
     m_propertyManager = new PropertyManager(m_propertyBar);
     m_propertyBar->setPropertyManager(m_propertyManager);
@@ -84,16 +85,16 @@ void UIContext::setUIContext() {
     m_toolBar->addTool(std::make_shared<TextTool>(), Tool::Text);
     m_toolBar->addTool(std::make_shared<MoveTool>(), Tool::Move);
 
-    // TODO: Define their functions somewhere else
-    m_actionBar->addButton("Save As", IconManager::ACTION_SAVE_AS, 6);
-    m_actionBar->addButton("Save", IconManager::ACTION_SAVE, 9);
-    m_actionBar->addButton("Open File", IconManager::ACTION_OPEN_FILE, 7);
-    m_actionBar->addButton("Zoom Out", IconManager::ACTION_ZOOM_OUT, 1);
-    m_actionBar->addButton("Zoom In", IconManager::ACTION_ZOOM_IN, 2);
-    m_actionBar->addButton("Light Mode", IconManager::ACTION_LIGHT_MODE, 3);
-    m_actionBar->addButton("Undo", IconManager::ACTION_UNDO, 4);
-    m_actionBar->addButton("Redo", IconManager::ACTION_REDO, 5);
-    m_actionBar->addButton("Settings", IconManager::ACTION_SETTINGS, 8);
+    // Initialize action bar buttons with their corresponding icons and event handlers
+    m_actionBar->addButton("Save As", IconManager::ACTION_SAVE_AS, BUTTON_ID_SAVE_AS);
+    m_actionBar->addButton("Save", IconManager::ACTION_SAVE, BUTTON_ID_SAVE);
+    m_actionBar->addButton("Open File", IconManager::ACTION_OPEN_FILE, BUTTON_ID_OPEN_FILE);
+    m_actionBar->addButton("Zoom Out", IconManager::ACTION_ZOOM_OUT, BUTTON_ID_ZOOM_OUT);
+    m_actionBar->addButton("Zoom In", IconManager::ACTION_ZOOM_IN, BUTTON_ID_ZOOM_IN);
+    m_actionBar->addButton("Light Mode", IconManager::ACTION_LIGHT_MODE, BUTTON_ID_LIGHT_MODE);
+    m_actionBar->addButton("Undo", IconManager::ACTION_UNDO, BUTTON_ID_UNDO);
+    m_actionBar->addButton("Redo", IconManager::ACTION_REDO, BUTTON_ID_REDO);
+    m_actionBar->addButton("Settings", IconManager::ACTION_SETTINGS, BUTTON_ID_SETTINGS);
 
     QObject::connect(m_toolBar, &ToolBar::toolChanged, this, &UIContext::toolChanged);
     QObject::connect(m_toolBar,
@@ -101,69 +102,87 @@ void UIContext::setUIContext() {
                      m_propertyBar,
                      &PropertyBar::updateProperties);
 
-    QObject::connect(&m_actionBar->button(1), &QPushButton::clicked, this, [this]() {
-        m_applicationContext->renderingContext().updateZoomFactor(-1);
-    });
+    // Zoom Out: Decrease zoom level
+    QObject::connect(&m_actionBar->button(BUTTON_ID_ZOOM_OUT),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() { m_applicationContext->renderingContext().updateZoomFactor(-1); });
 
-    QObject::connect(&m_actionBar->button(2), &QPushButton::clicked, this, [this]() {
-        m_applicationContext->renderingContext().updateZoomFactor(1);
-    });
+    // Zoom In: Increase zoom level
+    QObject::connect(&m_actionBar->button(BUTTON_ID_ZOOM_IN),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() { m_applicationContext->renderingContext().updateZoomFactor(1); });
 
-    QObject::connect(&m_actionBar->button(4), &QPushButton::clicked, this, [this]() {
+    // Undo: Revert the last action
+    QObject::connect(&m_actionBar->button(BUTTON_ID_UNDO), &QPushButton::clicked, this, [this]() {
         m_applicationContext->spatialContext().commandHistory().undo();
         m_applicationContext->renderingContext().markForRender();
         m_applicationContext->renderingContext().markForUpdate();
     });
 
-    QObject::connect(&m_actionBar->button(5), &QPushButton::clicked, this, [this]() {
+    // Redo: Reapply the last undone action
+    QObject::connect(&m_actionBar->button(BUTTON_ID_REDO), &QPushButton::clicked, this, [this]() {
         m_applicationContext->spatialContext().commandHistory().redo();
         m_applicationContext->renderingContext().markForRender();
         m_applicationContext->renderingContext().markForUpdate();
     });
 
-    QObject::connect(&m_actionBar->button(6), &QPushButton::clicked, this, [this]() {
+    // Save As: Show file dialog to save drawing to a specified location
+    QObject::connect(&m_actionBar->button(BUTTON_ID_SAVE_AS),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() {
+                         Serializer serializer{};
+                         serializer.serialize(m_applicationContext);
+                         serializer.saveToFile();
+                     });
+
+    // Save: Save drawing directly to the currently open file
+    QObject::connect(&m_actionBar->button(BUTTON_ID_SAVE), &QPushButton::clicked, this, [this]() {
         Serializer serializer{};
-
-        serializer.serialize(m_applicationContext);
-        serializer.saveToFile();
-    });
-
-    QObject::connect(&m_actionBar->button(9), &QPushButton::clicked, this, [this]() {
-        Serializer serializer{};
-
         serializer.serialize(m_applicationContext);
         if (!serializer.saveCurrentFile()) {
             qDebug() << "No file currently open, use 'Save to File' instead";
         }
     });
 
-    QObject::connect(&m_actionBar->button(7), &QPushButton::clicked, this, [this]() {
-        Loader loader{};
+    // Open File: Load a drawing from disk
+    QObject::connect(&m_actionBar->button(BUTTON_ID_OPEN_FILE),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() {
+                         Loader loader{};
+                         loader.loadFromFile(m_applicationContext);
+                     });
 
-        loader.loadFromFile(m_applicationContext);
-    });
+    // Light/Dark Mode Toggle: Switch between light and dark theme
+    QObject::connect(&m_actionBar->button(BUTTON_ID_LIGHT_MODE),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() {
+                         Canvas &canvas{m_applicationContext->renderingContext().canvas()};
+                         QPushButton &button{actionBar().button(BUTTON_ID_LIGHT_MODE)};
 
-    QObject::connect(&m_actionBar->button(3), &QPushButton::clicked, this, [this]() {
-        Canvas &canvas{m_applicationContext->renderingContext().canvas()};
-        QPushButton &button{actionBar().button(3)};
+                         if (canvas.bg() == Common::lightBackgroundColor) {
+                             canvas.setBg(Common::darkBackgroundColor);
+                             button.setToolTip("Light Mode");
+                             button.setIcon(iconManager().icon(IconManager::ACTION_LIGHT_MODE));
+                         } else {
+                             canvas.setBg(Common::lightBackgroundColor);
+                             button.setToolTip("Dark Mode");
+                             button.setIcon(iconManager().icon(IconManager::ACTION_DARK_MODE));
+                         }
 
-        if (canvas.bg() == Common::lightBackgroundColor) {
-            canvas.setBg(Common::darkBackgroundColor);
-            button.setToolTip("Light Mode");
-            button.setIcon(iconManager().icon(IconManager::ACTION_LIGHT_MODE));
-        } else {
-            canvas.setBg(Common::lightBackgroundColor);
-            button.setToolTip("Dark Mode");
-            button.setIcon(iconManager().icon(IconManager::ACTION_DARK_MODE));
-        }
+                         m_applicationContext->renderingContext().markForRender();
+                         m_applicationContext->renderingContext().markForUpdate();
+                     });
 
-        m_applicationContext->renderingContext().markForRender();
-        m_applicationContext->renderingContext().markForUpdate();
-    });
-
-    QObject::connect(&m_actionBar->button(8), &QPushButton::clicked, this, [this]() {
-        m_settingsDialog->showCentered();
-    });
+    // Settings: Open the settings dialog
+    QObject::connect(&m_actionBar->button(BUTTON_ID_SETTINGS),
+                     &QPushButton::clicked,
+                     this,
+                     [this]() { m_settingsDialog->showCentered(); });
 
     m_propertyBar->updateProperties(m_toolBar->curTool());
 }

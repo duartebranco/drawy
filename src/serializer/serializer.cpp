@@ -18,11 +18,11 @@
 
 #include "serializer.hpp"
 
+#include <QFile>
 #include <QFileDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QStandardPaths>
-#include <QFile>
 #include <format>
 #include <memory>
 
@@ -57,7 +57,7 @@ void Serializer::serialize(ApplicationContext *context) {
     m_object["zoom_factor"] = zoomFactor;
 }
 
-QJsonObject Serializer::toJson(const std::shared_ptr<Item>& item) {
+QJsonObject Serializer::toJson(const std::shared_ptr<Item> &item) {
     QJsonObject obj{};
 
     obj["type"] = QJsonValue(static_cast<int>(item->type()));
@@ -118,67 +118,77 @@ QJsonObject Serializer::toJson(const QPointF &point) {
 }
 
 QString Serializer::getCurrentFilePath() const {
-    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
-    QFile settingsFile(settingsPath);
-    
+    // Build the path to the settings file in the user's home directory
+    QString settingsPath{QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+                         "/.drawy/settings.json"};
+    QFile settingsFile{settingsPath};
+
+    // Read the last opened file path from settings if the file exists
     if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
-        QByteArray data = settingsFile.readAll();
+        QByteArray fileData{settingsFile.readAll()};
         settingsFile.close();
-        QJsonDocument doc = QJsonDocument::fromJson(data);
-        if (doc.isObject()) {
-            QJsonObject obj = doc.object();
-            return obj.value("lastOpenedFile").toString("");
+        QJsonDocument settingsDoc{QJsonDocument::fromJson(fileData)};
+
+        if (settingsDoc.isObject()) {
+            QJsonObject settingsObj{settingsDoc.object()};
+            return settingsObj.value("lastOpenedFile").toString("");
         }
     }
-    
+
     return QString();
 }
 
 void Serializer::saveToFile() {
+    // Create JSON document from the current drawing data
     QJsonDocument doc{m_object};
 
     qDebug() << "Saving...";
 
+    // Prepare default file path suggestion
     QDir homeDir{QDir::home()};
+    QString defaultFileName{std::format("Untitled.{}", Common::drawyFileExt).data()};
+    QString defaultFilePath{homeDir.filePath(defaultFileName)};
 
-    auto text = std::format("Untitled.{}", Common::drawyFileExt);
-    QString defaultFilePath = homeDir.filePath(text.data());
-
-    text = std::format("Drawy (*.{})", Common::drawyFileExt);
+    // Open save file dialog to let user choose where to save
+    QString filterPattern{std::format("Drawy (*.{})", Common::drawyFileExt).data()};
     QString fileName{
-        QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data())};
+        QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, filterPattern)};
 
     if (fileName.isEmpty()) {
         qDebug() << "Save cancelled by user";
         return;
     }
 
-    auto data{doc.toJson(QJsonDocument::Compact)};
-    auto compressedData{Common::Utils::Compression::compressData(data)};
+    // Serialize and compress the drawing data
+    QByteArray jsonData{doc.toJson(QJsonDocument::Compact)};
+    QByteArray compressedData{Common::Utils::Compression::compressData(jsonData)};
 
+    // Write compressed data to file
     QFile file{fileName};
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Failed to open file for writing:" << file.errorString();
         return;
     }
-    qint64 written = file.write(compressedData);
+    qint64 bytesWritten{file.write(compressedData)};
     file.close();
 
-    if (written != compressedData.size()) {
+    // Verify that all bytes were written successfully
+    if (bytesWritten != compressedData.size()) {
         qWarning() << "Warning: not all bytes were written";
         return;
     }
 
     qDebug() << "Saved to file: " << fileName;
 
-    // Save the file path to settings
+    // Persist the file path to settings for future quick saves
     saveLastOpenedFile(fileName);
 }
 
 bool Serializer::saveCurrentFile() {
-    QString fileName = getCurrentFilePath();
-    
-    // If no file is currently open, return false
+    // Retrieve the path of the currently open file from settings
+    QString fileName{getCurrentFilePath()};
+
+    // If no file is currently open or the file no longer exists, return false
     if (fileName.isEmpty() || !QFile::exists(fileName)) {
         qDebug() << "No current file to save";
         return false;
@@ -186,19 +196,24 @@ bool Serializer::saveCurrentFile() {
 
     qDebug() << "Saving to current file:" << fileName;
 
+    // Create JSON document from the current drawing data
     QJsonDocument doc{m_object};
-    auto data{doc.toJson(QJsonDocument::Compact)};
-    auto compressedData{Common::Utils::Compression::compressData(data)};
 
+    // Serialize and compress the drawing data
+    QByteArray jsonData{doc.toJson(QJsonDocument::Compact)};
+    QByteArray compressedData{Common::Utils::Compression::compressData(jsonData)};
+
+    // Write compressed data directly to the existing file
     QFile file{fileName};
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Failed to open file for writing:" << file.errorString();
         return false;
     }
-    qint64 written = file.write(compressedData);
+    qint64 bytesWritten{file.write(compressedData)};
     file.close();
 
-    if (written != compressedData.size()) {
+    // Verify that all bytes were written successfully
+    if (bytesWritten != compressedData.size()) {
         qWarning() << "Warning: not all bytes were written";
         return false;
     }
@@ -208,12 +223,13 @@ bool Serializer::saveCurrentFile() {
 }
 
 void Serializer::saveLastOpenedFile(const QString &filePath) const {
-    QString settingsPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
+    QString settingsPath =
+        QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.drawy/settings.json";
     QFile settingsFile(settingsPath);
-    
+
     QJsonDocument settingsDoc;
     QJsonObject settingsObj;
-    
+
     // Read existing settings
     if (settingsFile.exists() && settingsFile.open(QIODevice::ReadOnly)) {
         QByteArray data = settingsFile.readAll();
@@ -223,11 +239,11 @@ void Serializer::saveLastOpenedFile(const QString &filePath) const {
             settingsObj = settingsDoc.object();
         }
     }
-    
+
     // Update with new file path
     settingsObj.insert("lastOpenedFile", filePath);
     settingsDoc.setObject(settingsObj);
-    
+
     // Write back
     if (settingsFile.open(QIODevice::WriteOnly)) {
         settingsFile.write(settingsDoc.toJson());
