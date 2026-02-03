@@ -137,21 +137,20 @@ QString Serializer::getCurrentFilePath() const {
 void Serializer::saveToFile() {
     QJsonDocument doc{m_object};
 
-    QString fileName = getCurrentFilePath();
-    
-    // If no file is currently open, show save dialog
-    if (fileName.isEmpty() || !QFile::exists(fileName)) {
-        QDir homeDir{QDir::home()};
+    qDebug() << "Saving...";
 
-        auto text = std::format("Untitled.{}", Common::drawyFileExt);
-        QString defaultFilePath = homeDir.filePath(text.data());
+    QDir homeDir{QDir::home()};
 
-        text = std::format("Drawy (*.{})", Common::drawyFileExt);
-        fileName = QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data());
+    auto text = std::format("Untitled.{}", Common::drawyFileExt);
+    QString defaultFilePath = homeDir.filePath(text.data());
 
-        if (fileName.isEmpty()) {
-            return;
-        }
+    text = std::format("Drawy (*.{})", Common::drawyFileExt);
+    QString fileName{
+        QFileDialog::getSaveFileName(nullptr, "Save File", defaultFilePath, text.data())};
+
+    if (fileName.isEmpty()) {
+        qDebug() << "Save cancelled by user";
+        return;
     }
 
     auto data{doc.toJson(QJsonDocument::Compact)};
@@ -170,8 +169,42 @@ void Serializer::saveToFile() {
         return;
     }
 
+    qDebug() << "Saved to file: " << fileName;
+
     // Save the file path to settings
     saveLastOpenedFile(fileName);
+}
+
+bool Serializer::saveCurrentFile() {
+    QString fileName = getCurrentFilePath();
+    
+    // If no file is currently open, return false
+    if (fileName.isEmpty() || !QFile::exists(fileName)) {
+        qDebug() << "No current file to save";
+        return false;
+    }
+
+    qDebug() << "Saving to current file:" << fileName;
+
+    QJsonDocument doc{m_object};
+    auto data{doc.toJson(QJsonDocument::Compact)};
+    auto compressedData{Common::Utils::Compression::compressData(data)};
+
+    QFile file{fileName};
+    if (!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "Failed to open file for writing:" << file.errorString();
+        return false;
+    }
+    qint64 written = file.write(compressedData);
+    file.close();
+
+    if (written != compressedData.size()) {
+        qWarning() << "Warning: not all bytes were written";
+        return false;
+    }
+
+    qDebug() << "Saved to file: " << fileName;
+    return true;
 }
 
 void Serializer::saveLastOpenedFile(const QString &filePath) const {

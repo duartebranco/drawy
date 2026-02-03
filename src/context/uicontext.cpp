@@ -86,6 +86,7 @@ void UIContext::setUIContext() {
 
     // TODO: Define their functions somewhere else
     m_actionBar->addButton("Save to File", IconManager::ACTION_SAVE, 6);
+    m_actionBar->addButton("Save this file", IconManager::ACTION_SAVE, 9);
     m_actionBar->addButton("Open File", IconManager::ACTION_OPEN_FILE, 7);
     m_actionBar->addButton("Zoom Out", IconManager::ACTION_ZOOM_OUT, 1);
     m_actionBar->addButton("Zoom In", IconManager::ACTION_ZOOM_IN, 2);
@@ -125,6 +126,15 @@ void UIContext::setUIContext() {
 
         serializer.serialize(m_applicationContext);
         serializer.saveToFile();
+    });
+
+    QObject::connect(&m_actionBar->button(9), &QPushButton::clicked, this, [this]() {
+        Serializer serializer{};
+
+        serializer.serialize(m_applicationContext);
+        if (!serializer.saveCurrentFile()) {
+            qDebug() << "No file currently open, use 'Save to File' instead";
+        }
     });
 
     QObject::connect(&m_actionBar->button(7), &QPushButton::clicked, this, [this]() {

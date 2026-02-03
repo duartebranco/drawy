@@ -31,6 +31,7 @@ public:
 
     void serialize(ApplicationContext *context);
     void saveToFile();
+    bool saveCurrentFile();
     void saveLastOpenedFile(const QString &filePath) const;
     QString getCurrentFilePath() const;
 

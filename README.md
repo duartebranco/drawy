@@ -11,11 +11,11 @@ Drawy is a work-in-progress infinite whiteboard tool written in Qt/C++, which ai
 
 This fork has some new features that i found indispensable and i wanted to have right now, such as:
 
-- Settings tab;
-- Remember theme mode preference;
-- Open last edited file;
-- Save same file when its being edited;
-- Possible more in the future ...
+- **Settings tab**;
+- **Remember theme mode preference**;
+- **Open last edited file**;
+- **Save same file when its being edited**;
+- **Possible more in the future ...**
 
 I did this _fast_ and _just_ for me.
 
