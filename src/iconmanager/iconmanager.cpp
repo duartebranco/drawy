@@ -31,6 +31,7 @@ IconManager::IconManager(QObject *parent) : QObject{parent} {
                   {TOOL_TEXT, "tool-text"},
                   {TOOL_MOVE, "tool-move"},
                   {ACTION_SAVE, "action-save"},
+                  {ACTION_SAVE_AS, "action-save_as"},
                   {ACTION_OPEN_FILE, "action-open_file"},
                   {ACTION_ZOOM_IN, "action-zoom_in"},
                   {ACTION_ZOOM_OUT, "action-zoom_out"},

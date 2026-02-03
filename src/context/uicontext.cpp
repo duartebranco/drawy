@@ -85,8 +85,8 @@ void UIContext::setUIContext() {
     m_toolBar->addTool(std::make_shared<MoveTool>(), Tool::Move);
 
     // TODO: Define their functions somewhere else
-    m_actionBar->addButton("Save to File", IconManager::ACTION_SAVE, 6);
-    m_actionBar->addButton("Save this file", IconManager::ACTION_SAVE, 9);
+    m_actionBar->addButton("Save As", IconManager::ACTION_SAVE_AS, 6);
+    m_actionBar->addButton("Save", IconManager::ACTION_SAVE, 9);
     m_actionBar->addButton("Open File", IconManager::ACTION_OPEN_FILE, 7);
     m_actionBar->addButton("Zoom Out", IconManager::ACTION_ZOOM_OUT, 1);
     m_actionBar->addButton("Zoom In", IconManager::ACTION_ZOOM_IN, 2);

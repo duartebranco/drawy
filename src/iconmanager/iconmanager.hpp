@@ -36,6 +36,7 @@ public:
         TOOL_TEXT,
         TOOL_MOVE,
         ACTION_SAVE,
+        ACTION_SAVE_AS,
         ACTION_OPEN_FILE,
         ACTION_ZOOM_IN,
         ACTION_ZOOM_OUT,

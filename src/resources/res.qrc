@@ -17,6 +17,7 @@
         <file>icons/fa-dark/tool-text.svg</file>
         <file>icons/fa-dark/tool-move.svg</file>
         <file>icons/fa-dark/action-save.svg</file>
+        <file>icons/fa-dark/action-save_as.svg</file>
         <file>icons/fa-dark/action-open_file.svg</file>
         <file>icons/fa-dark/action-zoom_in.svg</file>
         <file>icons/fa-dark/action-zoom_out.svg</file>
@@ -40,6 +41,7 @@
         <file>icons/fa-light/tool-text.svg</file>
         <file>icons/fa-light/tool-move.svg</file>
         <file>icons/fa-light/action-save.svg</file>
+        <file>icons/fa-light/action-save_as.svg</file>
         <file>icons/fa-light/action-open_file.svg</file>
         <file>icons/fa-light/action-zoom_in.svg</file>
         <file>icons/fa-light/action-zoom_out.svg</file>
