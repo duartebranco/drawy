@@ -30,6 +30,8 @@ class ApplicationContext;
 class KeybindManager;
 class ActionManager;
 class IconManager;
+class NotificationLabel;
+class ChangesTracker;
 
 class UIContext : public QObject {
     // Action bar button IDs for clarity and maintainability
@@ -58,6 +60,12 @@ public:
     PropertyManager &propertyManager() const;
     IconManager &iconManager() const;
 
+    void showNotification(const QString &message, int durationMs = 2000);
+    
+    ChangesTracker &changesTracker() const;
+    
+    bool promptSaveBeforeClose();
+
     void reset();
 
 public slots:
@@ -73,6 +81,8 @@ private:
     ActionManager *m_actionManager{};
     Event *m_event{nullptr};
     IconManager *m_iconManager{};
+    NotificationLabel *m_notificationLabel{nullptr};
+    ChangesTracker *m_changesTracker{nullptr};
 
     Tool *m_lastTool{nullptr};  // Used to call the cleanup function of the last tool
 

@@ -17,6 +17,9 @@ This fork has some new features that i found indispensable and i wanted to have 
 - **'Save As' and 'Save' distinction**;
 - **Suport for keyboard shortcuts in text editing mode**;
 - **Config file** (in `~/.config/drawy/settings.json`);
+- **Unsaved changes tracking**;
+- **Save notifications**;
+- **Save confirmation on exit**;
 
 I did this _fast_ and _just_ for me.
 

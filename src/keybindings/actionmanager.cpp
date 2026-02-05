@@ -21,6 +21,8 @@
 #include <memory>
 
 #include "../command/commandhistory.hpp"
+#include "../components/changestracker.hpp"
+#include "../components/notification.hpp"
 #include "../command/deselectcommand.hpp"
 #include "../command/groupcommand.hpp"
 #include "../command/removeitemcommand.hpp"
@@ -267,7 +269,10 @@ void ActionManager::saveToFile() {
     Serializer serializer{};
 
     serializer.serialize(m_context);
-    serializer.saveToFile();
+    if (serializer.saveToFile()) {
+        m_context->uiContext().showNotification("File saved successfully!");
+        m_context->uiContext().changesTracker().markSaved();
+    }
 }
 
 void ActionManager::saveCurrentFile() {
@@ -275,13 +280,20 @@ void ActionManager::saveCurrentFile() {
     Serializer serializer{};
 
     serializer.serialize(m_context);
-    if (!serializer.saveCurrentFile()) {
+    if (serializer.saveCurrentFile()) {
+        m_context->uiContext().showNotification("File saved successfully!");
+        m_context->uiContext().changesTracker().markSaved();
+    } else {
         // If no current file exists, fall back to Save As dialog
-        serializer.saveToFile();
+        if (serializer.saveToFile()) {
+            m_context->uiContext().showNotification("File saved successfully!");
+            m_context->uiContext().changesTracker().markSaved();
+        }
     }
 }
 
 void ActionManager::loadFromFile() {
     Loader loader{};
     loader.loadFromFile(m_context);
+    m_context->uiContext().changesTracker().markSaved();
 }

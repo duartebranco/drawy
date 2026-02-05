@@ -138,7 +138,7 @@ QString Serializer::getCurrentFilePath() const {
     return QString();
 }
 
-void Serializer::saveToFile() {
+bool Serializer::saveToFile() {
     // Create JSON document from the current drawing data
     QJsonDocument doc{m_object};
 
@@ -156,7 +156,7 @@ void Serializer::saveToFile() {
 
     if (fileName.isEmpty()) {
         qDebug() << "Save cancelled by user";
-        return;
+        return false;
     }
 
     // Serialize and compress the drawing data
@@ -167,7 +167,7 @@ void Serializer::saveToFile() {
     QFile file{fileName};
     if (!file.open(QIODevice::WriteOnly)) {
         qWarning() << "Failed to open file for writing:" << file.errorString();
-        return;
+        return false;
     }
     qint64 bytesWritten{file.write(compressedData)};
     file.close();
@@ -175,13 +175,14 @@ void Serializer::saveToFile() {
     // Verify that all bytes were written successfully
     if (bytesWritten != compressedData.size()) {
         qWarning() << "Warning: not all bytes were written";
-        return;
+        return false;
     }
 
     qDebug() << "Saved to file: " << fileName;
 
     // Persist the file path to settings for future quick saves
     saveLastOpenedFile(fileName);
+    return true;
 }
 
 bool Serializer::saveCurrentFile() {

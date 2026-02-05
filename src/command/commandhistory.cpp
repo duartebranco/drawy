@@ -20,7 +20,7 @@
 
 #include <QDebug>
 
-CommandHistory::CommandHistory(ApplicationContext *context) : m_context{context} {
+CommandHistory::CommandHistory(ApplicationContext *context) : QObject(), m_context{context} {
     m_undoStack = std::make_unique<std::deque<std::shared_ptr<Command>>>();
     m_redoStack = std::make_unique<std::deque<std::shared_ptr<Command>>>();
 }
@@ -42,6 +42,8 @@ void CommandHistory::undo() {
         m_redoStack->pop_back();
 
     m_undoStack->pop_front();
+    
+    emit commandUndone();
 }
 
 void CommandHistory::redo() {
@@ -56,6 +58,8 @@ void CommandHistory::redo() {
         m_undoStack->pop_back();
 
     m_redoStack->pop_front();
+    
+    emit commandExecuted();
 }
 
 void CommandHistory::insert(const std::shared_ptr<Command>& command) {
@@ -68,6 +72,8 @@ void CommandHistory::insert(const std::shared_ptr<Command>& command) {
     m_undoStack->push_front(command);
     if (m_undoStack->size() == maxCommands)
         m_undoStack->pop_back();
+    
+    emit commandExecuted();
 }
 
 void CommandHistory::clear() {

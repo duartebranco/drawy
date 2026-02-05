@@ -29,6 +29,7 @@
 
 #include "../canvas/canvas.hpp"
 #include "../components/actionbar.hpp"
+#include "../components/changestracker.hpp"
 #include "../components/propertybar.hpp"
 #include "../components/settingsdialog.hpp"
 #include "../components/toolbar.hpp"
@@ -38,6 +39,8 @@
 #include "../controller/controller.hpp"
 #include "../serializer/loader.hpp"
 #include "boardlayout.hpp"
+
+#include <QCloseEvent>
 
 // Constants for layout configuration
 static constexpr int LAYOUT_MARGIN{10};
@@ -120,6 +123,7 @@ void MainWindow::m_tryLoadLastOpenedFile(ApplicationContext *context) {
             if (restoreLastFileEnabled && !lastOpenedFilePath.isEmpty()) {
                 Loader fileLoader{};
                 fileLoader.loadFromFilePath(context, lastOpenedFilePath);
+                context->uiContext().changesTracker().markSaved();
             }
         }
     }
@@ -145,5 +149,16 @@ void MainWindow::m_applyCustomStyles() {
     int interFontId{QFontDatabase::addApplicationFont(":/fonts/Inter.ttf")};
     if (interFontId == -1) {
         qWarning() << "Failed to load font: Inter";
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    ApplicationContext *context{ApplicationContext::instance()};
+    UIContext &uiContext{context->uiContext()};
+
+    if (uiContext.promptSaveBeforeClose()) {
+        event->accept();
+    } else {
+        event->ignore();
     }
 }

@@ -29,6 +29,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     bool m_config_useSystemStyles{true};
     void m_applyCustomStyles();

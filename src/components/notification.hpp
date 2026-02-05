@@ -18,35 +18,21 @@
 
 #pragma once
 
-#include <QObject>
-#include <deque>
-#include <memory>
+#include <QLabel>
+#include <QTimer>
+#include <QWidget>
 
-#include "command.hpp"
-class ApplicationContext;
-
-class CommandHistory : public QObject {
+class NotificationLabel : public QLabel {
     Q_OBJECT
 
 public:
-    CommandHistory(ApplicationContext *context);
-    ~CommandHistory() override;
+    explicit NotificationLabel(QWidget *parent = nullptr);
+    ~NotificationLabel() override;
 
-    void undo();
-    void redo();
-    void insert(const std::shared_ptr<Command>& command);
-
-    static constexpr int maxCommands{100};  // arbitrary
-
-    void clear();
-
-signals:
-    void commandExecuted();
-    void commandUndone();
+    void showMessage(const QString &message, int durationMs = 2000);
 
 private:
-    std::unique_ptr<std::deque<std::shared_ptr<Command>>> m_undoStack;
-    std::unique_ptr<std::deque<std::shared_ptr<Command>>> m_redoStack;
+    void m_hide();
 
-    ApplicationContext *m_context;
+    QTimer *m_hideTimer;
 };

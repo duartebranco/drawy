@@ -19,6 +19,8 @@
 #include "uicontext.hpp"
 
 #include "../canvas/canvas.hpp"
+#include "../components/notification.hpp"
+#include "../components/changestracker.hpp"
 #include "../command/commandhistory.hpp"
 #include "../common/renderitems.hpp"
 #include "../components/actionbar.hpp"
@@ -45,13 +47,19 @@
 #include "selectioncontext.hpp"
 #include "spatialcontext.hpp"
 
+#include <QMessageBox>
+#include <QPushButton>
+
 UIContext::UIContext(ApplicationContext *context)
     : QObject{context},
-      m_applicationContext{context} {
+      m_applicationContext{context},
+      m_notificationLabel{nullptr},
+      m_changesTracker{nullptr} {
 }
 
 UIContext::~UIContext() {
     delete m_event;
+    delete m_changesTracker;
     qDebug() << "Object deleted: UIContext";
 }
 
@@ -64,6 +72,8 @@ void UIContext::setUIContext() {
     m_iconManager = new IconManager(m_applicationContext);
     m_settingsDialog =
         new SettingsDialog(m_applicationContext, m_applicationContext->parentWidget());
+    m_changesTracker = new ChangesTracker(m_applicationContext);
+    m_notificationLabel = new NotificationLabel(&m_applicationContext->renderingContext().canvas());
 
     m_propertyManager = new PropertyManager(m_propertyBar);
     m_propertyBar->setPropertyManager(m_propertyManager);
@@ -135,15 +145,25 @@ void UIContext::setUIContext() {
                      [this]() {
                          Serializer serializer{};
                          serializer.serialize(m_applicationContext);
-                         serializer.saveToFile();
+                         if (serializer.saveToFile()) {
+                             m_notificationLabel->showMessage("File saved successfully!");
+                             m_changesTracker->markSaved();
+                         }
                      });
 
     // Save: Save drawing directly to the currently open file
     QObject::connect(&m_actionBar->button(BUTTON_ID_SAVE), &QPushButton::clicked, this, [this]() {
         Serializer serializer{};
         serializer.serialize(m_applicationContext);
-        if (!serializer.saveCurrentFile()) {
-            qDebug() << "No file currently open, use 'Save to File' instead";
+        if (serializer.saveCurrentFile()) {
+            m_notificationLabel->showMessage("File saved successfully!");
+            m_changesTracker->markSaved();
+        } else {
+            // If no current file exists, fall back to Save As dialog
+            if (serializer.saveToFile()) {
+                m_notificationLabel->showMessage("File saved successfully!");
+                m_changesTracker->markSaved();
+            }
         }
     });
 
@@ -154,6 +174,7 @@ void UIContext::setUIContext() {
                      [this]() {
                          Loader loader{};
                          loader.loadFromFile(m_applicationContext);
+                         m_changesTracker->markSaved();
                      });
 
     // Light/Dark Mode Toggle: Switch between light and dark theme
@@ -235,6 +256,52 @@ void UIContext::toolChanged(Tool &tool) {
     canvas.setCursor(tool.cursor());
 
     m_applicationContext->renderingContext().markForUpdate();
+}
+
+void UIContext::showNotification(const QString &message, int durationMs) {
+    m_notificationLabel->showMessage(message, durationMs);
+}
+
+ChangesTracker &UIContext::changesTracker() const {
+    return *m_changesTracker;
+}
+
+bool UIContext::promptSaveBeforeClose() {
+    if (!m_changesTracker->hasUnsavedChanges()) {
+        return true;  // No unsaved changes, safe to close
+    }
+
+    QMessageBox msgBox(m_applicationContext->parentWidget());
+    msgBox.setWindowTitle("Unsaved Changes");
+    msgBox.setText("You have unsaved changes.");
+    msgBox.setInformativeText("Do you want to save before closing?");
+    msgBox.setIcon(QMessageBox::Warning);
+    
+    QPushButton *saveButton = msgBox.addButton("Save", QMessageBox::AcceptRole);
+    QPushButton *dontSaveButton = msgBox.addButton("Don't Save", QMessageBox::DestructiveRole);
+    QPushButton *cancelButton = msgBox.addButton("Cancel", QMessageBox::RejectRole);
+    
+    msgBox.setDefaultButton(saveButton);
+    msgBox.exec();
+    
+    QAbstractButton *clickedButton = msgBox.clickedButton();
+    
+    if (clickedButton == saveButton) {
+        Serializer serializer{};
+        serializer.serialize(m_applicationContext);
+        if (!serializer.saveCurrentFile()) {
+            // If no current file, show save dialog
+            if (!serializer.saveToFile()) {
+                return false;  // User cancelled save dialog
+            }
+        }
+        m_changesTracker->markSaved();
+        return true;
+    } else if (clickedButton == dontSaveButton) {
+        return true;  // User chose to discard changes
+    } else {
+        return false;  // User clicked Cancel - remain in app
+    }
 }
 
 void UIContext::reset() {

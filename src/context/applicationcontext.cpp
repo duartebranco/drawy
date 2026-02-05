@@ -39,9 +39,9 @@ ApplicationContext::~ApplicationContext() {
 
 void ApplicationContext::setContexts() {
     m_renderingContext->setRenderingContext();
-    m_uiContext->setUIContext();
     m_spatialContext->setSpatialContext();
     m_spatialContext->coordinateTransformer().setCoordinateTransformer();
+    m_uiContext->setUIContext();
 }
 
 QWidget *ApplicationContext::parentWidget() const {

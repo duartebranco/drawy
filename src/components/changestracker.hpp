@@ -19,34 +19,28 @@
 #pragma once
 
 #include <QObject>
-#include <deque>
-#include <memory>
 
-#include "command.hpp"
 class ApplicationContext;
 
-class CommandHistory : public QObject {
+class ChangesTracker : public QObject {
     Q_OBJECT
 
 public:
-    CommandHistory(ApplicationContext *context);
-    ~CommandHistory() override;
+    explicit ChangesTracker(ApplicationContext *context);
+    ~ChangesTracker() override;
 
-    void undo();
-    void redo();
-    void insert(const std::shared_ptr<Command>& command);
-
-    static constexpr int maxCommands{100};  // arbitrary
-
-    void clear();
+    bool hasUnsavedChanges() const;
+    void markSaved();
+    void markChanged();
 
 signals:
-    void commandExecuted();
-    void commandUndone();
+    void changesStatusChanged(bool hasChanges);
+
+private slots:
+    void m_onCommandExecuted();
+    void m_onCommandUndone();
 
 private:
-    std::unique_ptr<std::deque<std::shared_ptr<Command>>> m_undoStack;
-    std::unique_ptr<std::deque<std::shared_ptr<Command>>> m_redoStack;
-
     ApplicationContext *m_context;
+    bool m_hasUnsavedChanges;
 };
